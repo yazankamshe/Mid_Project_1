@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Authentication & Profile API</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Background Image */
+        body {
+            background: url("https://media.istockphoto.com/id/1368151370/photo/user-typing-login-and-password-cyber-security-concept.jpg?s=612x612&w=0&k=20&c=hZ14F6Fa4edYWwg0BduAj0is8gdcORsBBHpQcQbAPKc=") no-repeat center center/cover;
+            height: 100vh;
+            color: white;
+        }
+
+        /* Glassmorphism Effect */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 2rem;
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.6) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Button Styling */
+        .btn-custom {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background-color: white;
+            color: black;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Auth & Profile API</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="register.html">Register</a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="d-flex align-items-center justify-content-center text-center" style="height: 60vh;">
+        <div class="glass-container text-center">
+            <h1 class="fw-bold">Welcome to User Authentication & Profile API</h1>
+            <p class="lead">Secure authentication & user profile management with JWT and MySQL</p>
+            <a href="register.html" class="btn btn-custom btn-lg">Get Started</a>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <div class="container my-5">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="glass-container">
+                    <h3>🔐 Secure Authentication</h3>
+                    <p>We use JWT tokens to ensure secure authentication for users.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-container">
+                    <h3>📄 User Profiles</h3>
+                    <p>Manage your user profile details securely and efficiently.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-container">
+                    <h3>⚡ Easy Integration</h3>
+                    <p>Integrate this API easily with your frontend applications.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <p>&copy; 2025 User Authentication & Profile API. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

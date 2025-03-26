@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Auth System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: url("https://img.freepik.com/free-vector/realistic-style-technology-particle-background_23-2148426704.jpg?semt=ais_hybrid") no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .card {
+            width: 400px;
+            padding: 30px;
+            background:  rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        .btn-primary {
+            width: 100%;
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 5px;
+        }
+        input {
+            height: 45px;
+        }
+        p {
+            color: aliceblue;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <h2 class="text-center mb-4">Register</h2>
+            <div class="mb-3">
+                <input type="text" id="regName" class="form-control" placeholder="Full Name">
+                <small id="errorName" class="text-danger"></small>
+            </div>
+            <div class="mb-3">
+                <input type="email" id="regEmail" class="form-control" placeholder="Email">
+                <small id="errorEmail" class="text-danger"></small>
+            </div>
+            <div class="mb-3">
+                <input type="password" id="regPassword" class="form-control" placeholder="Password">
+                <small id="errorPassword" class="text-danger"></small>
+            </div>
+            <div class="mb-3">
+                <input type="text" id="regPhone" class="form-control" placeholder="Phone Number">
+                <small id="errorPhone" class="text-danger"></small>
+            </div>
+            <div class="mb-3">
+                <input type="text" id="regAddress" class="form-control" placeholder="Address">
+                <small id="errorAddress" class="text-danger"></small>
+            </div>
+            <button class="btn btn-primary w-100" onclick="register()">Register</button>
+            <p>Already have an account? <a href="login.html">Login here</a></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
