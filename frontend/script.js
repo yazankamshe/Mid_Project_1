@@ -50,10 +50,7 @@ async function register() {
     const phone = document.getElementById("regPhone").value;
     const address = document.getElementById("regAddress").value;
 
-    // التحقق من صحة الإدخال
-    if (!validateRegisterInputs(name, email, password, phone, address)) {
-        return;
-    }
+    if (!validateRegisterInputs(name, email, password, phone, address)) return;
 
     try {
         const res = await fetch(`${API_URL}/register`, {
@@ -65,35 +62,92 @@ async function register() {
         const data = await res.json();
 
         if (res.ok) {
-            alert("Registration successful!");
-            window.location.href = "login.html"; 
+            alert(" A verification code has been sent to your email.");
+            localStorage.setItem("userEmail", email);
+            window.location.href = "verify.html";
         } else {
-            alert(data.message || "Registration failed! Try again.");
+            alert("❌ " + data.message);
         }
     } catch (error) {
-        alert("An error occurred while connecting to the server!");
+        console.error("Error:", error);
     }
 }
+
+//  التحقق من OTP
+async function verifyOTP() {
+    const email = localStorage.getItem("userEmail");
+    const otp = document.getElementById("otp").value;
+
+    try {
+        const res = await fetch(`${API_URL}/verify-otp`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, otp })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            document.getElementById("message").innerText = "Verified successfully!";
+            setTimeout(() => window.location.href = "login.html", 2000);
+        } else {
+            document.getElementById("message").innerText = "❌ " + data.message;
+        }
+    } catch (error) {
+        console.error("Error verifying OTP:", error);
+    }
+}
+
+//  إعادة إرسال OTP
+async function resendOTP() {
+    const email = localStorage.getItem("userEmail");
+
+    try {
+        const res = await fetch(`${API_URL}/resend-otp`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await res.json();
+        document.getElementById("message").innerText = data.message;
+    } catch (error) {
+        console.error("Error resending OTP:", error);
+    }
+}
+
+
 // Login 
 async function login() {
-    const email = document.getElementById("loginEmail").value;
+    const emailOrName = document.getElementById("loginEmailOrName").value;
     const password = document.getElementById("loginPassword").value;
 
-    const res = await fetch(`${API_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-    });
+    if (!emailOrName || !password) {
+        alert("Please enter your email/username and password.");
+        return;
+    }
 
-    const data = await res.json();
+    try {
+        const res = await fetch(`${API_URL}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ emailOrName, password }),
+        });
 
-    if (data.token) {
-        localStorage.setItem("token", data.token);
-        window.location.href = "profile.html"; // Redirect to profile
-    } else {
-        alert("Invalid login credentials");
+        const data = await res.json();
+
+        if (res.ok) {
+            localStorage.setItem("token", data.token);
+            window.location.href = "profile.html"; // Redirect to profile
+        } else {
+            alert(data.message || "Invalid login credentials");
+        }
+    } catch (error) {
+        console.error("Login error:", error);
+        alert("An error occurred while logging in. Please try again.");
     }
 }
+
 
 
 //  Fetch User Profile

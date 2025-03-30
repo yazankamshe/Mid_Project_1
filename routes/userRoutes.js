@@ -4,7 +4,7 @@ const {
     loginUser,
     getUserProfile,
     updateUserProfile,
-    deleteUser,logoutUser }  = require('../controllers/userController');
+    deleteUser,logoutUser ,verifyOTP}  = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -15,6 +15,8 @@ router.get('/profile', protect, getUserProfile);
 router.put('/profile', protect, updateUserProfile);
 router.delete('/profile', protect, deleteUser);
 router.post('/logout', logoutUser); 
+
+router.post('/verify-otp', verifyOTP);
 
 
 module.exports = router;
