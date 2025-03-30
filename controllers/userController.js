@@ -214,6 +214,63 @@ const logoutUser = (req, res) => {
 
     res.json({ message: 'Logged out successfully' });
 };
+// Forgot Password - Request OTP
+const forgotPassword = (req, res) => {
+    const { email } = req.body;
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); 
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // صالح لمدة 10 دقائق
+
+    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+        if (results.length === 0) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        db.query(
+            'UPDATE users SET otp_code = ?, otp_expires = ? WHERE email = ?',
+            [otp, otpExpires, email],
+            async (err) => {
+                if (err) return res.status(500).json({ message: 'Error generating OTP' });
+
+                await sendOTP(email, otp);
+                res.json({ message: 'OTP sent to your email. Please verify.' });
+            }
+        );
+    });
+};
+
+// Reset Password
+const resetPassword = (req, res) => {
+    const { email, otp, newPassword } = req.body;
+
+    db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
+        if (results.length === 0) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        const user = results[0];
+
+        if (user.otp_code !== otp) {
+            return res.status(400).json({ message: 'Invalid OTP' });
+        }
+
+        if (new Date(user.otp_expires) < new Date()) {
+            return res.status(400).json({ message: 'OTP expired' });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        db.query(
+            'UPDATE users SET password = ?, otp_code = NULL, otp_expires = NULL WHERE email = ?',
+            [hashedPassword, email],
+            (err) => {
+                if (err) return res.status(500).json({ message: 'Error resetting password' });
+
+                res.json({ message: 'Password reset successful. You can now log in.' });
+            }
+        );
+    });
+};
+
 
 
 module.exports = {
@@ -221,6 +278,6 @@ module.exports = {
     loginUser,
     getUserProfile,
     updateUserProfile,
-    deleteUser,  logoutUser,verifyOTP
-  
+    deleteUser,  logoutUser,verifyOTP,forgotPassword,resetPassword
+
 };

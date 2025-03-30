@@ -4,7 +4,7 @@ const {
     loginUser,
     getUserProfile,
     updateUserProfile,
-    deleteUser,logoutUser ,verifyOTP}  = require('../controllers/userController');
+    deleteUser,logoutUser ,verifyOTP,forgotPassword,resetPassword}  = require('../controllers/userController');
 const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -17,6 +17,9 @@ router.delete('/profile', protect, deleteUser);
 router.post('/logout', logoutUser); 
 
 router.post('/verify-otp', verifyOTP);
+
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password', resetPassword);
 
 
 module.exports = router;

@@ -98,23 +98,23 @@ async function verifyOTP() {
     }
 }
 
-//  إعادة إرسال OTP
-async function resendOTP() {
-    const email = localStorage.getItem("userEmail");
+// //  إعادة إرسال OTP
+// async function resendOTP() {
+//     const email = localStorage.getItem("userEmail");
 
-    try {
-        const res = await fetch(`${API_URL}/resend-otp`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email })
-        });
+//     try {
+//         const res = await fetch(`${API_URL}/resend-otp`, {
+//             method: "POST",
+//             headers: { "Content-Type": "application/json" },
+//             body: JSON.stringify({ email })
+//         });
 
-        const data = await res.json();
-        document.getElementById("message").innerText = data.message;
-    } catch (error) {
-        console.error("Error resending OTP:", error);
-    }
-}
+//         const data = await res.json();
+//         document.getElementById("message").innerText = data.message;
+//     } catch (error) {
+//         console.error("Error resending OTP:", error);
+//     }
+// }
 
 
 // Login 
@@ -145,6 +145,68 @@ async function login() {
     } catch (error) {
         console.error("Login error:", error);
         alert("An error occurred while logging in. Please try again.");
+    }
+}
+
+// forget password send-otp to email
+async function forgotPassword() {
+    const email = document.getElementById("forgotEmail").value;
+
+    if (!email.trim()) {
+        alert("Please enter your email!");
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_URL}/forgot-password`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            alert("A verification code has been sent to your email.");
+            localStorage.setItem("resetEmail", email);
+            window.location.href = "reset-password.html"; 
+        } else {
+            alert("❌ " + data.message);
+        }
+    } catch (error) {
+        console.error("Error sending OTP:", error);
+    }
+}
+
+// reset password suing otp
+async function resetPassword() {
+    const email = localStorage.getItem("resetEmail");
+    const otp = document.getElementById("resetOTP").value;
+    const newPassword = document.getElementById("resetPassword").value;
+
+    if (!otp.trim() || newPassword.length < 6) {
+        alert("Please enter a valid OTP and a new password with at least 6 characters.");
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_URL}/reset-password`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, otp, newPassword })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            alert("Your password has been reset successfully!");
+            localStorage.removeItem("resetEmail"); 
+            window.location.href = "login.html"; // 
+        } else {
+            alert("❌ " + data.message);
+        }
+    } catch (error) {
+        console.error("Error resetting password:", error);
     }
 }
 
