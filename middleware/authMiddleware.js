@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
 const protect = (req, res, next) => {
     const token = req.cookies.token;  // Read token from cookies
 
@@ -7,7 +9,7 @@ const protect = (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, 'your_jwt_secret');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = { id: decoded.id };
         next();
     } catch (error) {

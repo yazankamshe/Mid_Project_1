@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 const { sendOTP } = require('../config/email');
+require('dotenv').config();
 
 // const nodemailer = require('nodemailer');
 
@@ -74,8 +75,8 @@ const verifyOTP = (req, res) => {
 // register ----------http://localhost:5000/api/users/register
 const registerUser = (req, res) => {
     const { name, email, password, phone, address } = req.body;
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();  // توليد OTP مكون من 6 أرقام
-    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);  // صلاحية OTP لمدة 10 دقائق
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();  
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);  
 
     db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
         if (results.length > 0) {
@@ -109,7 +110,7 @@ const loginUser = (req, res) => {
         if (!results[0].is_verified) {
             return res.status(401).json({ message: 'Please verify your email first' });
         }
-        const token = jwt.sign({ id: results[0].id }, 'your_jwt_secret', { expiresIn: '1h' });
+        const token = jwt.sign({ id: results[0].id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
         res.cookie('token', token, {
             httpOnly: true,

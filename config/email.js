@@ -1,17 +1,19 @@
 const nodemailer = require('nodemailer');
+require('dotenv').config();
+
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: process.env.EMAIL_SERVICE,
     auth: {
-        user: 'yazankamseh@gmail.com',
-        pass: 'y j d d g r d b a t u j a r s u'  //"App Password" 
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASSWORD  //"App Password" 
     }
 });
 
 const sendOTP = async (email, otp) => {
     try {
         const mailOptions = {
-            from: 'yazankamseh@gmail.com',
+            from: process.env.EMAIL_SERVICE,
             to: email,
             subject: 'Your OTP Code',
             text: `Your verification code is: ${otp}. It is valid for 10 minutes.`
