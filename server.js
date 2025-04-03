@@ -3,6 +3,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const userRoutes = require('./routes/userRoutes');
+const weatherRoutes = require('./routes/weatherRoutes');
+
 const path = require('path'); 
 require('dotenv').config();
 
@@ -20,6 +22,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/users', userRoutes);
+app.use('/api/weather', weatherRoutes); 
 
 const PORT = process.env.PORT || 5000;
 

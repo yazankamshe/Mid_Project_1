@@ -1,5 +1,189 @@
-const API_URL = "http://localhost:5000/api/users";
 
+const WEATHER_API_URL = "http://localhost:5000/api/weather"; // API endpoint for weather data
+const USERS_API_URL = "http://localhost:5000/api/users"; // API endpoint for user data
+
+let selectedCityId = null;
+
+
+ // Handle form submission to add a new city
+async function addCity() {
+    const cityName = document.getElementById("newCityName").value;  // Get the new city name from the form
+    if (!cityName.trim()) {
+        alert("Please enter a valid city name.");
+        return;
+    }
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("You need to log in to add a city.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        const res = await fetch(`${WEATHER_API_URL}/addcity`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ city: cityName })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            alert("City added successfully!");
+            loadFavoriteCities(); // Reload the cities list after adding the new city
+        } else {
+            alert(data.message || "Failed to add city.");
+        }
+    } catch (error) {
+        console.error("Error adding city:", error);
+        alert("An error occurred while adding the city.");
+    }
+}
+
+// Attach event listener to the form submit button for adding a new city
+document.getElementById("addCityForm")?.addEventListener("submit", (e) => {
+    e.preventDefault(); // Prevent default form submission
+    addCity();  // Call the function to add the city
+});
+
+
+// Weather-related functions
+async function loadFavoriteCities() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("You need to log in!");
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        const res = await fetch(`${WEATHER_API_URL}/favoriteCities`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        const data = await res.json();
+
+        if (data.length === 0) {
+            alert("No favorite cities found.");
+            return;
+        }
+
+        const citySelect = document.getElementById("citySelect");
+        data.forEach(city => {
+            const option = document.createElement("option");
+            option.value = city.id;
+            option.textContent = city.city;
+            citySelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading cities:", error);
+    }
+}
+
+function showCityOptions() {
+    const citySelect = document.getElementById("citySelect");
+    selectedCityId = citySelect.value;
+    if (selectedCityId) {
+        document.getElementById("cityOptions").style.display = "block";
+        document.getElementById("weatherInfo").style.display = "none";
+    }
+}
+
+async function showWeatherData() {
+    const token = localStorage.getItem("token");
+
+    try {
+        const res = await fetch(`${WEATHER_API_URL}/favoritecitylookup/${selectedCityId}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            const weatherDiv = document.getElementById("weatherInfo");
+            weatherDiv.style.display = "block";
+            weatherDiv.innerHTML = `
+                <p><strong>Temperature:</strong> ${data.weather.temperature}°C</p>
+                <p><strong>Description:</strong> ${data.weather.description}</p>
+                <p><strong>Humidity:</strong> ${data.weather.humidity}%</p>
+                <p><strong>Wind Speed:</strong> ${data.weather.windSpeed} m/s</p>
+                <img src="${data.weather.icon}" alt="weather icon" />
+            `;
+        } else {
+            alert("Failed to fetch weather data.");
+        }
+    } catch (error) {
+        console.error("Error fetching weather data:", error);
+    }
+}
+
+async function editCity() {
+    const newCityName = prompt("Edit city name:");
+    if (!newCityName) return;
+
+    const token = localStorage.getItem("token");
+
+    try {
+        const res = await fetch(`${WEATHER_API_URL}/updatecity/${selectedCityId}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ city: newCityName }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            alert("City updated successfully!");
+            loadFavoriteCities(); // Reload the cities list
+        } else {
+            alert(data.message || "Failed to update city.");
+        }
+    } catch (error) {
+        console.error("Error editing city:", error);
+    }
+}
+
+async function deleteCity() {
+    const token = localStorage.getItem("token");
+
+    const confirmDelete = confirm("Are you sure you want to delete this city?");
+    if (!confirmDelete) return;
+
+    try {
+        const res = await fetch(`${WEATHER_API_URL}/deletecity/${selectedCityId}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+            },
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            alert("City deleted successfully!");
+            loadFavoriteCities(); // Reload the cities list
+        } else {
+            alert(data.message || "Failed to delete city.");
+        }
+    } catch (error) {
+        console.error("Error deleting city:", error);
+    }
+}
+
+window.onload = loadFavoriteCities; // Load cities when the page loads
 
 function validateRegisterInputs(name, email, password, phone, address) {
     let isValid = true;
@@ -53,7 +237,7 @@ async function register() {
     if (!validateRegisterInputs(name, email, password, phone, address)) return;
 
     try {
-        const res = await fetch(`${API_URL}/register`, {
+        const res = await fetch(`${USERS_API_URL}/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name, email, password, phone, address }),
@@ -79,7 +263,7 @@ async function verifyOTP() {
     const otp = document.getElementById("otp").value;
 
     try {
-        const res = await fetch(`${API_URL}/verify-otp`, {
+        const res = await fetch(`${USERS_API_URL}/verify-otp`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, otp })
@@ -128,7 +312,7 @@ async function login() {
     }
 
     try {
-        const res = await fetch(`${API_URL}/login`, {
+        const res = await fetch(`${USERS_API_URL}/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ emailOrName, password }),
@@ -158,7 +342,7 @@ async function forgotPassword() {
     }
 
     try {
-        const res = await fetch(`${API_URL}/forgot-password`, {
+        const res = await fetch(`${USERS_API_URL}/forgot-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email })
@@ -190,7 +374,7 @@ async function resetPassword() {
     }
 
     try {
-        const res = await fetch(`${API_URL}/reset-password`, {
+        const res = await fetch(`${USERS_API_URL}/reset-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, otp, newPassword })
@@ -221,7 +405,7 @@ async function loadProfile() {
         return;
     }
 
-    const res = await fetch(`${API_URL}/profile`, {
+    const res = await fetch(`${USERS_API_URL}/profile`, {
         method: "GET",
         headers: { 
             "Content-Type": "application/json",
@@ -254,7 +438,7 @@ async function updateUserProfile() {
     const phone = document.getElementById("updatePhone").value;
     const address = document.getElementById("updateAddress").value;
 
-    const res = await fetch(`${API_URL}/profile`, {
+    const res = await fetch(`${USERS_API_URL}/profile`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -284,7 +468,7 @@ document.getElementById("updateProfileForm")?.addEventListener("submit", (e) => 
 async function logout() {
     try {
         
-        await fetch(`${API_URL}/logout`, {
+        await fetch(`${USERS_API_URL}/logout`, {
             method: "POST",
             credentials: "include", 
         });
@@ -310,7 +494,7 @@ async function deleteUserAccount() {
     if (!confirmDelete) return;
 
     try {
-        const res = await fetch(`${API_URL}/profile`, {
+        const res = await fetch(`${USERS_API_URL}/profile`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`,
